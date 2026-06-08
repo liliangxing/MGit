@@ -3,12 +3,14 @@ package com.manichord.mgit.dialogs
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import androidx.annotation.StringRes
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
-import kotlinx.android.synthetic.main.dialog_error.view.*
-import me.sheimi.android.views.SheimiDialogFragment
+import android.widget.TextView
+import androidx.annotation.StringRes
 import me.sheimi.sgit.BuildConfig
 import me.sheimi.sgit.R
+import me.sheimi.android.views.SheimiDialogFragment
 import me.sheimi.sgit.dialogs.DummyDialogListener
 import timber.log.Timber
 
@@ -26,13 +28,14 @@ class ErrorDialog : SheimiDialogFragment() {
         val builder = AlertDialog.Builder(rawActivity)
         val inflater = rawActivity.layoutInflater
         val layout = inflater.inflate(R.layout.dialog_error, null)
+        val errorMessageView = layout.findViewById<TextView>(R.id.error_message)
         val details = when (mThrowable) {
             is Exception -> {
                 (mThrowable as Exception).message
             }
             else -> ""
         }
-        layout.error_message.setText(getString(mErrorRes) + "\n" + details)
+        errorMessageView.setText(getString(mErrorRes) + "\n" + details)
 
         builder.setView(layout)
 
