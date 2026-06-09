@@ -1,34 +1,35 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 34
+    buildToolsVersion '34.0.0'
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
 
     defaultConfig {
         applicationId "com.manichord.mgit"
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdkVersion 24
+        targetSdkVersion 34
 
         vectorDrawables.useSupportLibrary = true
 
         versionCode 240
-        versionName "1.7.0"
+        versionName "1.8.2"
     }
 
     buildFeatures {
         dataBinding true
+        buildConfig true
     }
 
-    lintOptions {
+    lint {
         abortOnError false
     }
 
@@ -42,10 +43,10 @@ android {
             }
         } else {
             release {
-                keyAlias ''
-                keyPassword ''
-                storeFile file('/empty')
-                storePassword ''
+                storeFile file('debug.keystore')
+                keyAlias 'androiddebugkey'
+                storePassword 'android'
+                keyPassword 'android'
             }
         }
     }
