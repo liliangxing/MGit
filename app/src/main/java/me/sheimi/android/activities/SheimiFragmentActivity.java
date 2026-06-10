@@ -118,6 +118,19 @@ public class SheimiFragmentActivity extends AppCompatActivity {
     protected void checkAndRequestRequiredPermissions(Context context, String legacyPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (PermissionsHelper.Companion.canReadStorage(context) != true) {
+                // Check if we can request all files access on this Android version
+                if (!PermissionsHelper.Companion.canRequestAllFilesAccess(context)) {
+                    showMessageDialog(
+                        R.string.dialog_error_title,
+                        getString(R.string.error_all_files_access_not_available),
+                        R.string.label_ok,
+                        (dialogInterface, i) -> {
+                            finish();
+                        }
+                    );
+                    return;
+                }
+
                 showMessageDialog(
                     R.string.dialog_access_all_files_title,
                     getString(R.string.dialog_access_all_files_msg),
@@ -126,10 +139,18 @@ public class SheimiFragmentActivity extends AppCompatActivity {
                     (dialogInterface, i) -> {
                         try {
                             Uri uri = Uri.fromParts("package", getPackageName(), null);
-                            Intent permissionAllowIntent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri);
+                            Intent permissionAllowIntent;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                permissionAllowIntent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                            } else {
+                                permissionAllowIntent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri);
+                            }
                             startActivity(permissionAllowIntent);
                         } catch (ActivityNotFoundException e) {
                             Log.e("SheimiFragmentActivity", "could not start activity to request all files permission");
+                            showMessageDialog(R.string.dialog_error_title, getString(R.string.error_couldnt_display_all_files_permission));
+                        } catch (SecurityException e) {
+                            Log.e("SheimiFragmentActivity", "security exception when requesting all files permission: " + e.getMessage());
                             showMessageDialog(R.string.dialog_error_title, getString(R.string.error_couldnt_display_all_files_permission));
                         }
                     },
